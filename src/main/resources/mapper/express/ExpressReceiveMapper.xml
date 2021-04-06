@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.express.ExpressReceiveMapper">
+    <insert id="insertOne" parameterType="com.boot.yuntechlife.entity.express.ExpressReceive">
+        insert into express_receive
+        values(0,#{user_id},#{express_taker_id},#{state},#{real_name},#{line},#{phone},false,CURRENT_TIMESTAMP())
+    </insert>
+    <select id="getCount" parameterType="com.boot.yuntechlife.entity.express.ExpressReceive" resultType="int">
+        select count(*) from express_receive where user_id=#{user_id}
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="express_taker_id!=null and express_taker_id!=''">and express_taker_id=#{express_taker_id}</if>
+        <if test="add_time!=null">and DATE_FORMAT(add_time,'%Y-%m-%d')=DATE_FORMAT(#{add_time},'%Y-%m-%d')</if>
+        and deleted=false
+    </select>
+    <select id="getList" parameterType="com.boot.yuntechlife.entity.user.User" resultType="java.util.HashMap">
+        select express_receive.id as id,
+        express_receive.express_taker_id as express_taker_id,
+        express_taker.express_name as express_name,
+        express_taker.express_num as express_num,
+        express_taker.express_type as express_type,
+        express_taker.take_points as take_points,
+        express_taker.amount as amount,
+        express_taker.commission as commission,
+        express_taker.surcharge as surcharge,
+        express_taker.actual_amount as actual_amount,
+        express_taker.remark as remark,
+        express_receive.state as state,
+        express_receive.add_time as add_time
+        from express_taker,express_receive where express_receive.user_id=#{id} and express_receive.deleted=false and
+        express_receive.express_taker_id=express_taker.id
+        <if test="keyword!=null and keyword!=''">and (express_taker.contact_name like CONCAT('%',#{keyword},'%') or
+            express_taker.line like CONCAT('%',#{keyword},'%') or express_taker.phone like CONCAT('%',#{keyword},'%') or
+            express_taker.appointment_points like CONCAT('%',#{keyword},'%') or express_taker.express_name like
+            CONCAT('%',#{keyword},'%') or express_taker.express_num like CONCAT('%',#{keyword},'%') or
+            express_taker.recipient_phone like CONCAT('%',#{keyword},'%') or express_taker.remark like
+            CONCAT('%',#{keyword},'%') or express_receive.line like CONCAT('%',#{keyword},'%') or express_receive.phone
+            like CONCAT('%',#{keyword},'%') or express_receive.real_name like CONCAT('%',#{keyword},'%'))
+        </if>
+        <if test="state!=null and state!=''">and express_receive.state=#{state}</if>
+        <if test="startTime!=null">and express_receive.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and express_receive.add_time&lt;=#{endTime}</if>
+    </select>
+    <update id="deleteOne" parameterType="com.boot.yuntechlife.entity.express.ExpressReceive">
+        update express_receive set deleted=true where user_id=#{user_id} and id=#{id} and deleted=false limit 1
+    </update>
+    <update id="updateOne" parameterType="com.boot.yuntechlife.entity.express.ExpressReceive">
+        update express_receive
+        <set>
+            <if test="state!=null and state!=''">state=#{state},</if>
+        </set>
+        where user_id=#{user_id} and id=#{id} and deleted=false limit 1
+    </update>
+    <select id="getById" parameterType="com.boot.yuntechlife.entity.express.ExpressReceive"
+            resultType="com.boot.yuntechlife.entity.express.ExpressReceive">
+        select * from express_receive where user_id=#{user_id} and id=#{id} and deleted=false limit 1
+    </select>
+    <select id="getByExpressTakerId" parameterType="com.boot.yuntechlife.entity.express.ExpressReceive"
+            resultType="com.boot.yuntechlife.entity.express.ExpressReceive">
+        select * from express_receive where user_id=#{user_id} and express_taker_id=#{express_taker_id} and
+        deleted=false limit 1
+    </select>
+    <select id="getCountByPending" parameterType="com.boot.yuntechlife.entity.express.ExpressReceive" resultType="int">
+        select count(*) from express_receive where user_id=#{user_id}
+        and (state=2 or state=4 or state=7)
+        and deleted=false
+    </select>
+    <select id="getByIssuance" parameterType="com.boot.yuntechlife.entity.express.ExpressReceive"
+            resultType="com.boot.yuntechlife.entity.express.ExpressReceive">
+        select * from express_receive where express_taker_id=#{express_taker_id} limit 1
+    </select>
+    <select id="getCountByTotal" parameterType="com.boot.yuntechlife.entity.express.ExpressReceive" resultType="int">
+        select count(*) from express_receive where user_id=#{user_id} and (state=4 or state=5)
+    </select>
+</mapper>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.flow.YuntechFlowConfigMapper">
+    <select id="getById" parameterType="com.boot.yuntechlife.entity.flow.YuntechFlowConfig"
+            resultType="com.boot.yuntechlife.entity.flow.YuntechFlowConfig">
+        select * from yuntech_flow_config where user_id=#{user_id} and deleted=false
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        limit 1
+    </select>
+</mapper>

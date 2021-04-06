@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.flow.YuntechFlowMapper">
+    <insert id="insertOne" parameterType="com.boot.yuntechlife.entity.flow.YuntechFlow">
+        insert into yuntech_flow
+        values(0,#{ip},#{ins_up},#{ins_down},#{ext_up},#{ext_down},#{flow},#{ratio},false,CURRENT_TIMESTAMP())
+    </insert>
+    <select id="getList" parameterType="com.boot.yuntechlife.entity.user.User"
+            resultType="com.boot.yuntechlife.entity.flow.YuntechFlow">
+        select
+        yuntech_flow.id,yuntech_flow.ip,yuntech_flow.ext_up,yuntech_flow.ext_down,yuntech_flow.ins_up,yuntech_flow.ins_down,yuntech_flow.flow,yuntech_flow.ratio,yuntech_flow.add_time
+        from yuntech_flow,yuntech_flow_set where
+        yuntech_flow_set.user_id=#{id} and yuntech_flow_set.ip=yuntech_flow.ip and yuntech_flow_set.state=1 and
+        yuntech_flow_set.deleted=false and yuntech_flow.deleted=false
+        <if test="keyword!=null and keyword!=''">and ( yuntech_flow.ip like CONCAT('%',#{keyword},'%') or
+            yuntech_flow_set.remark like CONCAT('%',#{keyword},'%') or yuntech_flow_set.warn_mail like
+            CONCAT('%',#{keyword},'%') or yuntech_flow_set.warn_phone like CONCAT('%',#{keyword},'%'))
+        </if>
+        <if test="startTime!=null">and yuntech_flow.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and yuntech_flow.add_time&lt;=#{endTime}</if>
+    </select>
+    <update id="deleteOne" parameterType="com.boot.yuntechlife.entity.flow.YuntechFlow">
+        update yuntech_flow set deleted=true
+        where
+        id=#{id}
+        and deleted=false
+        limit 1
+    </update>
+    <select id="getDayInfoByWeek" parameterType="com.boot.yuntechlife.entity.flow.YuntechFlow"
+            resultType="com.boot.yuntechlife.entity.flow.YuntechFlow">
+        ( SELECT
+        id,
+        ip,
+        ins_up,
+        ins_down,
+        ext_up,
+        ext_down,
+        flow,
+        DATE_FORMAT( add_time, '%Y-%m-%d' ) AS add_time
+        FROM
+        yuntech_flow
+        WHERE
+        ip = #{ip}
+        AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( #{add_time}, '%Y-%m-%d' )
+        AND deleted=false
+        ORDER BY
+        id DESC
+        LIMIT 1
+        ) UNION ALL
+        (
+        SELECT
+        id,
+        ip,
+        ins_up,
+        ins_down,
+        ext_up,
+        ext_down,
+        flow,
+        DATE_FORMAT( add_time, '%Y-%m-%d' ) AS add_time
+        FROM
+        yuntech_flow
+        WHERE
+        ip = #{ip}
+        AND deleted=false
+        AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( date_sub( #{add_time}, INTERVAL 1 DAY ), '%Y-%m-%d' )
+        ORDER BY
+        id DESC
+        LIMIT 1
+        ) UNION ALL
+        (
+        SELECT
+        id,
+        ip,
+        ins_up,
+        ins_down,
+        ext_up,
+        ext_down,
+        flow,
+        DATE_FORMAT( add_time, '%Y-%m-%d' ) AS add_time
+        FROM
+        yuntech_flow
+        WHERE
+        ip = #{ip}
+        AND deleted=false
+        AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( date_sub( #{add_time}, INTERVAL 2 DAY ), '%Y-%m-%d' )
+        ORDER BY
+        id DESC
+        LIMIT 1
+        ) UNION ALL
+        (
+        SELECT
+        id,
+        ip,
+        ins_up,
+        ins_down,
+        ext_up,
+        ext_down,
+        flow,
+        DATE_FORMAT( add_time, '%Y-%m-%d' ) AS add_time
+        FROM
+        yuntech_flow
+        WHERE
+        ip = #{ip}
+        AND deleted=false
+        AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( date_sub( #{add_time}, INTERVAL 3 DAY ), '%Y-%m-%d' )
+        ORDER BY
+        id DESC
+        LIMIT 1
+        ) UNION ALL
+        (
+        SELECT
+        id,
+        ip,
+        ins_up,
+        ins_down,
+        ext_up,
+        ext_down,
+        flow,
+        DATE_FORMAT( add_time, '%Y-%m-%d' ) AS add_time
+        FROM
+        yuntech_flow
+        WHERE
+        ip = #{ip}
+        AND deleted=false
+        AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( date_sub( #{add_time}, INTERVAL 4 DAY ), '%Y-%m-%d' )
+        ORDER BY
+        id DESC
+        LIMIT 1
+        ) UNION ALL
+        (
+        SELECT
+        id,
+        ip,
+        ins_up,
+        ins_down,
+        ext_up,
+        ext_down,
+        flow,
+        DATE_FORMAT( add_time, '%Y-%m-%d' ) AS add_time
+        FROM
+        yuntech_flow
+        WHERE
+        ip = #{ip}
+        AND deleted=false
+        AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( date_sub( #{add_time}, INTERVAL 5 DAY ), '%Y-%m-%d' )
+        ORDER BY
+        id DESC
+        LIMIT 1
+        ) UNION ALL
+        (
+        SELECT
+        id,
+        ip,
+        ins_up,
+        ins_down,
+        ext_up,
+        ext_down,
+        flow,
+        DATE_FORMAT( add_time, '%Y-%m-%d' ) AS add_time
+        FROM
+        yuntech_flow
+        WHERE
+        ip = #{ip}
+        AND deleted=false
+        AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( date_sub( #{add_time}, INTERVAL 6 DAY ), '%Y-%m-%d' )
+        ORDER BY
+        id DESC
+        LIMIT 1
+        )
+    </select>
+    <select id="getSumByIp" parameterType="com.boot.yuntechlife.entity.flow.YuntechFlow"
+            resultType="com.boot.yuntechlife.entity.flow.YuntechFlow">
+        SELECT
+        sum( result.ins_up ) AS ins_up,
+        sum( result.ins_down ) AS ins_down,
+        sum( result.ext_up ) AS ext_up,
+        sum( result.ext_down ) AS ext_down,
+        sum( result.flow ) AS flow
+        FROM
+        (
+        SELECT
+        ins_up,
+        ins_down,
+        ext_up,
+        ext_down,
+        flow
+        FROM
+        (
+        SELECT DISTINCT
+        DATE_FORMAT( yuntech_flow.add_time, '%Y-%m-%d' ) AS add_datetime,
+        ifnull( ins_up, 0 ) AS ins_up,
+        ifnull( ins_down, 0 ) AS ins_down,
+        ifnull( ext_up, 0 ) AS ext_up,
+        ifnull( ext_down, 0 ) AS ext_down,
+        ifnull( flow, 0 ) AS flow
+        FROM
+        yuntech_flow
+        WHERE
+        ip = #{ip}
+        ORDER BY
+        add_time DESC
+        ) temp2
+        GROUP BY
+        add_datetime
+        ) result
+    </select>
+    <select id="getDayNumByIp" parameterType="com.boot.yuntechlife.entity.flow.YuntechFlow" resultType="int">
+        SELECT
+        count( * )
+        FROM
+        ( SELECT count( * ) FROM yuntech_flow WHERE ip = #{ip} AND deleted = FALSE GROUP BY DATE_FORMAT( add_time,
+        '%Y-%m-%d' ) ) temp
+    </select>
+    <select id="getListByDay" parameterType="com.boot.yuntechlife.entity.user.User"
+            resultType="com.boot.yuntechlife.entity.flow.YuntechFlow">
+        SELECT yuntech_flow.*
+        FROM
+        ( SELECT
+        yuntech_flow.*
+        FROM
+        yuntech_flow,
+        yuntech_flow_set
+        WHERE
+        yuntech_flow_set.user_id = #{id}
+        AND yuntech_flow.ip = yuntech_flow_set.ip
+        AND yuntech_flow_set.state=1
+        AND yuntech_flow_set.deleted=false
+        AND yuntech_flow.deleted=false
+        <if test="keyword!=null and keyword!=''">and ( yuntech_flow.ip like CONCAT('%',#{keyword},'%') or
+            yuntech_flow_set.remark like CONCAT('%',#{keyword},'%') or yuntech_flow_set.warn_mail like
+            CONCAT('%',#{keyword},'%') or yuntech_flow_set.warn_phone like CONCAT('%',#{keyword},'%'))
+        </if>
+        <if test="startTime!=null">and yuntech_flow.add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and yuntech_flow.add_time&lt;=#{endTime}</if>
+        ORDER BY id desc
+        ) yuntech_flow
+        GROUP BY
+        DATE_FORMAT(yuntech_flow.add_time,'%Y-%m-%d'),ip
+    </select>
+    <select id="getByIp" parameterType="com.boot.yuntechlife.entity.flow.YuntechFlow"
+            resultType="com.boot.yuntechlife.entity.flow.YuntechFlow">
+        select * from yuntech_flow where ip=#{ip} and deleted=false order by id desc limit 1
+    </select>
+</mapper>

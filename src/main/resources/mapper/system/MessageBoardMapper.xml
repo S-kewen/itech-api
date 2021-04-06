@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.system.MessageBoardMapper">
+    <insert id="insertOne" parameterType="com.boot.yuntechlife.entity.system.MessageBoard">
+        insert into message_board
+        values(0,#{user_id},#{state},#{anonymous},#{msg},#{ip},#{system},#{browser},#{header},false,CURRENT_TIMESTAMP())
+    </insert>
+    <select id="getCount" parameterType="com.boot.yuntechlife.entity.system.MessageBoard" resultType="int">
+        select count(*) from message_board where user_id=#{user_id} and deleted=false
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="add_time!=null">and DATE_FORMAT(add_time,'%Y-%m-%d')=DATE_FORMAT(#{add_time},'%Y-%m-%d')</if>
+    </select>
+    <select id="getList" parameterType="com.boot.yuntechlife.entity.system.MessageBoard" resultType="java.util.HashMap">
+        SELECT
+        message_board.id,
+        message_board.state,
+        IF
+        ( message_board.anonymous = 2, '匿名', USER.username ) AS username,
+        IF
+        ( message_board.anonymous = 2, 'https://static.iskwen.com/yuntechlife/images/avatar.png', USER.avatar ) AS
+        avatar,
+        message_board.msg,
+        message_board.system,
+        message_board.add_time
+        FROM
+        USER,
+        message_board
+        WHERE
+        user.id=message_board.user_id
+        and deleted = FALSE
+        ORDER BY
+        state DESC,add_time DESC
+    </select>
+</mapper>

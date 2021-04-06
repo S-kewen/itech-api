@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.user.NewsMapper">
+    <insert id="insertOne" parameterType="com.boot.yuntechlife.entity.user.News">
+        insert into news values(0,#{user_id},#{state},#{type},#{sender},#{title},#{msg},false,CURRENT_TIMESTAMP())
+    </insert>
+    <select id="getCount" parameterType="com.boot.yuntechlife.entity.user.News" resultType="int">
+        select count(*) from news where user_id=#{user_id}
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        and type=2
+        and deleted=false
+    </select>
+    <select id="getList" parameterType="com.boot.yuntechlife.entity.user.User"
+            resultType="com.boot.yuntechlife.entity.user.News">
+        select id,state,type,sender,title,msg,add_time from news where user_id=#{id} and deleted=false
+        <if test="keyword!=null and keyword!=''">and (sender like CONCAT('%',#{keyword},'%') or title like
+            CONCAT('%',#{keyword},'%') or msg like CONCAT('%',#{keyword},'%'))
+        </if>
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="startTime!=null">and add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and add_time&lt;=#{endTime}</if>
+    </select>
+    <update id="deleteById" parameterType="com.boot.yuntechlife.entity.user.News">
+        update news set deleted=true where user_id=#{user_id} and id=#{id} and deleted=false limit 1
+    </update>
+    <update id="updateById" parameterType="com.boot.yuntechlife.entity.user.News">
+        update news
+        <set>
+            <if test="state!=null and state!=''">state=#{state},</if>
+        </set>
+        where user_id=#{user_id} and id=#{id} and deleted=false limit 1
+    </update>
+    <update id="updateByUserId" parameterType="com.boot.yuntechlife.entity.user.News">
+        update news
+        <set>
+            <if test="state!=null and state!=''">state=#{state},</if>
+        </set>
+        where user_id=#{user_id} and deleted=false
+    </update>
+    <update id="allRead" parameterType="com.boot.yuntechlife.entity.user.News">
+        update news set state=2 where user_id=#{user_id} and state=1 and deleted=false
+    </update>
+</mapper>

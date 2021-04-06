@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.system.BaiduStatisticsMapper">
+    <insert id="insertOne" parameterType="com.boot.yuntechlife.entity.system.BaiduStatistics">
+        insert into baidu_statistics
+        values(0,#{site_id},#{date},#{pv_count},#{pv_ratio},#{visit_count},#{visitor_count},#{new_visitor_count},#{new_visitor_ratio},#{ip_count},#{bounce_ratio},#{avg_visit_time},#{avg_visit_pages},false,CURRENT_TIMESTAMP())
+    </insert>
+    <select id="getListByWeek" parameterType="com.boot.yuntechlife.entity.system.BaiduStatistics"
+            resultType="com.boot.yuntechlife.entity.system.BaiduStatistics">
+        (select date,pv_count,visit_count,visitor_count,avg_visit_time,new_visitor_count,bounce_ratio,add_time from
+        baidu_statistics where date=DATE_FORMAT(#{date},'%Y%m%d') and site_id=#{site_id} ORDER BY add_time DESC limit 1)
+        UNION ALL
+        (select date,pv_count,visit_count,visitor_count,avg_visit_time,new_visitor_count,bounce_ratio,add_time from
+        baidu_statistics where date=DATE_FORMAT(date_sub(#{date},interval 1 day),'%Y%m%d') and site_id=#{site_id} ORDER
+        BY id DESC limit 1)
+        UNION ALL
+        (select date,pv_count,visit_count,visitor_count,avg_visit_time,new_visitor_count,bounce_ratio,add_time from
+        baidu_statistics where date=DATE_FORMAT(date_sub(#{date},interval 2 day),'%Y%m%d') and site_id=#{site_id} ORDER
+        BY id DESC limit 1)
+        UNION ALL
+        (select date,pv_count,visit_count,visitor_count,avg_visit_time,new_visitor_count,bounce_ratio,add_time from
+        baidu_statistics where date=DATE_FORMAT(date_sub(#{date},interval 3 day),'%Y%m%d') and site_id=#{site_id} ORDER
+        BY id DESC limit 1)
+        UNION ALL
+        (select date,pv_count,visit_count,visitor_count,avg_visit_time,new_visitor_count,bounce_ratio,add_time from
+        baidu_statistics where date=DATE_FORMAT(date_sub(#{date},interval 4 day),'%Y%m%d') and site_id=#{site_id} ORDER
+        BY id DESC limit 1)
+        UNION ALL
+        (select date,pv_count,visit_count,visitor_count,avg_visit_time,new_visitor_count,bounce_ratio,add_time from
+        baidu_statistics where date=DATE_FORMAT(date_sub(#{date},interval 5 day),'%Y%m%d') and site_id=#{site_id} ORDER
+        BY id DESC limit 1)
+    </select>
+</mapper>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.user.UserIndexMapper">
+    <select id="getByUserId" parameterType="com.boot.yuntechlife.entity.user.User"
+            resultType="com.boot.yuntechlife.entity.user.UserIndex">
+        SELECT
+        (
+        SELECT
+        ifnull(sum(actual_amount),0)
+        FROM
+        transaction
+        WHERE
+        user_id = #{id}
+        AND type = 3
+        AND state = 1
+        AND DATE_FORMAT( add_time, '%Y-%m-%d' ) = DATE_FORMAT( now( ), '%Y-%m-%d' )
+        ) AS todayIncome,
+        (
+        SELECT
+        ifnull(sum(actual_amount),0)
+        FROM
+        transaction
+        WHERE
+        user_id = #{id}
+        AND type = 3
+        AND state = 1
+        ) AS alldayIncome,
+        USER.actual_name,
+        USER.balance,
+        USER.department_id,
+        USER.class_name,
+        USER.line,
+        USER.email,
+        USER.phone,
+        USER.verified_state,
+        (
+        SELECT
+        ifnull(flow,0)
+        FROM
+        yuntech_flow,
+        yuntech_flow_set
+        WHERE
+        user_id = #{id}
+        AND state = 1
+        AND yuntech_flow.ip = yuntech_flow_set.ip
+        AND yuntech_flow_set.deleted=false
+        and yuntech_flow.deleted=false
+        AND DATE_FORMAT( yuntech_flow.add_time, '%Y-%m-%d' ) = DATE_FORMAT( now( ), '%Y-%m-%d' )
+        ORDER BY yuntech_flow.id DESC LIMIT 1
+        ) AS todayFlow,
+        ( SELECT sum(result.sumflow) from (select sumflow from (SELECT distinct
+        DATE_FORMAT(yuntech_flow.add_time,'%Y-%m-%d') as add_datetime,
+        ifnull(flow,0) as sumflow
+        FROM
+        yuntech_flow
+        WHERE
+        yuntech_flow.ip = (
+        SELECT
+        DISTINCT
+        ip
+        FROM
+        yuntech_flow_set
+        WHERE
+        user_id = #{id}
+        AND state = 1
+        and deleted=false
+        limit 1
+        )
+        ORDER BY add_time desc) temp2
+        GROUP BY add_datetime
+        ) result
+        ) AS allFlow,
+        (
+        SELECT
+        ifnull(count(*),0)
+        FROM
+        yuntech_flow_warn
+        WHERE
+        user_id = #{id}
+        ) AS warnNum,
+        (
+        SELECT temp1.count + temp2.count
+        FROM (
+        (SELECT
+        count( * ) as count
+        FROM
+        express_taker
+        WHERE
+        user_id = #{id}
+        and (state=1 or state=2 or state=3 or state=4 or state=7)) temp1,
+        (SELECT
+        count( * ) as count
+        FROM
+        express_receive
+        WHERE
+        user_id = #{id}
+        and (state=2 or state=3 or state=4 or state=7)) temp2
+        )
+        ) AS processing,
+        (
+        SELECT temp1.count + temp2.count
+        FROM (
+        (SELECT
+        count( * ) as count
+        FROM
+        express_taker
+        WHERE
+        user_id = #{id}
+        and (state=3 or state=4 or state=7)) temp1,
+        (SELECT
+        count( * ) as count
+        FROM
+        express_receive
+        WHERE
+        user_id = #{id}
+        and (state=2 or state=4 or state=7)) temp2
+        )
+        ) AS pending,
+        (
+        SELECT temp1.count + temp2.count
+        FROM (
+        (SELECT
+        count( * ) as count
+        FROM
+        express_taker
+        WHERE
+        user_id = #{id}) temp1,
+        (SELECT
+        count( * ) as count
+        FROM
+        express_receive
+        WHERE
+        user_id = #{id}) temp2)
+        ) AS totalOrders
+        FROM
+        USER
+        WHERE
+        USER.id = #{id}
+        limit 1
+    </select>
+</mapper>

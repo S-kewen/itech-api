@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.system.SystemLogMapper">
+    <insert id="insertOne" parameterType="com.boot.yuntechlife.entity.system.SystemLog" >
+        insert into system_log values(0,#{state},#{type},#{service_id},#{pc_name},#{ip},#{msg},#{remark},false,CURRENT_TIMESTAMP())
+    </insert>
+</mapper>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.system.FeedbackMapper">
+    <insert id="insertOne" parameterType="com.boot.yuntechlife.entity.system.Feedback">
+        insert into feedback values(0,#{user_id},#{state},#{type},#{anonymous},#{content},'',false,CURRENT_TIMESTAMP())
+    </insert>
+    <select id="getCount" parameterType="com.boot.yuntechlife.entity.system.Feedback" resultType="int">
+        select count(*) from feedback where user_id=#{user_id} and deleted=false
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="type!=null and type!=''">and type=#{type}</if>
+        <if test="add_time!=null">and DATE_FORMAT(add_time,'%Y-%m-%d')=DATE_FORMAT(#{add_time},'%Y-%m-%d')</if>
+    </select>
+</mapper>

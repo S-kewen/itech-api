@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.school.YuntechExpressMapper">
+    <insert id="insertOne" parameterType="com.boot.yuntechlife.entity.school.YuntechExpress">
+        insert into yuntech_express
+        values(0,#{state},#{region},trim(#{express_name}),#{express_num},#{dormitory},#{addressee},#{receive_time},#{receipt_time},false,CURRENT_TIMESTAMP())
+    </insert>
+    <select id="getCount" parameterType="com.boot.yuntechlife.entity.school.YuntechExpress" resultType="int">
+        select count(*) from yuntech_express
+        <where>
+            <if test="state!=null and state!=''">and state=#{state}</if>
+            <if test="express_name!=null and express_name!=''">and express_name=trim(#{express_name})</if>
+            <if test="express_num!=null and express_num!=''">and express_num=#{express_num}</if>
+            <if test="dormitory!=null and dormitory!=''">and dormitory=#{dormitory}</if>
+            <if test="addressee!=null and addressee!=''">and addressee=#{addressee}</if>
+        </where>
+    </select>
+    <update id="updateOne" parameterType="com.boot.yuntechlife.entity.school.YuntechExpress">
+        update yuntech_express
+        <set>
+            <if test="state!=null and state!=''">state=#{state},</if>
+        </set>
+        where id=#{id}
+    </update>
+    <select id="getListByTask" parameterType="com.boot.yuntechlife.entity.user.User"
+            resultType="com.boot.yuntechlife.entity.school.YuntechExpress">
+        select * from yuntech_express where deleted=false
+        <if test="state!=null and state!=''">and state=#{state}</if>
+    </select>
+    <select id="getList" parameterType="com.boot.yuntechlife.entity.user.User"
+            resultType="com.boot.yuntechlife.entity.school.YuntechExpress">
+        select
+        id,state,region,express_name,express_num,if(state=2,CONCAT(SUBSTR(dormitory,1,2),SUBSTR('**********',1,char_length(dormitory)-2)),dormitory)
+        as dormitory,if(state=2,CONCAT(SUBSTR(addressee,1,1),SUBSTR('**********',1,char_length(addressee)-1)),addressee)
+        as addressee,receive_time,receipt_time,add_time from yuntech_express where deleted=false
+        <if test="keyword!=null and keyword!=''">and ( express_name like CONCAT('%',#{keyword},'%') or
+            express_num like CONCAT('%',#{keyword},'%') or dormitory like
+            CONCAT('%',#{keyword},'%') or addressee like CONCAT('%',#{keyword},'%'))
+        </if>
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="region!=null and region!=''">and region=#{region}</if>
+    </select>
+</mapper>

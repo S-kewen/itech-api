@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.home.ConsoleMapper">
+    <select id="getByUserId" parameterType="com.boot.yuntechlife.entity.user.User"
+            resultType="com.boot.yuntechlife.entity.home.Console">
+        SELECT
+        (
+        SELECT
+        ifnull( flow, 0 )
+        FROM
+        yuntech_flow,
+        yuntech_flow_set
+        WHERE
+        yuntech_flow_set.user_id = #{id}
+        AND yuntech_flow_set.ip = yuntech_flow.ip
+        AND yuntech_flow_set.state = 1
+        AND DATE_FORMAT( yuntech_flow.add_time, '%Y-%m-%d' ) = DATE_FORMAT( now( ), '%Y-%m-%d' )
+        ORDER BY
+        yuntech_flow.add_time DESC
+        LIMIT 1
+        ) AS todayFlow,
+        (
+        SELECT
+        ifnull( sum( amount ), 0 )
+        FROM
+        transaction
+        WHERE
+        transaction.user_id = #{id}
+        AND transaction.state = 1
+        AND transaction.type = 3
+        AND DATE_FORMAT( transaction.add_time, '%Y-%m-%d' ) = DATE_FORMAT( now( ), '%Y-%m-%d' )
+        ) AS todayIncome,
+        (
+        SELECT temp1.count + temp2.count
+        FROM (
+        (SELECT
+        count( * ) as count
+        FROM
+        express_taker
+        WHERE
+        user_id = #{id}
+        and (state=1 or state=2 or state=3 or state=4 or state=7)) temp1,
+        (SELECT
+        count( * ) as count
+        FROM
+        express_receive
+        WHERE
+        user_id = #{id}
+        and (state=2 or state=3 or state=4 or state=7)) temp2
+        )) AS unCompletedNum,
+        (
+        SELECT temp1.count + temp2.count
+        FROM (
+        (SELECT
+        count( * ) as count
+        FROM
+        express_taker
+        WHERE
+        user_id = #{id}
+        and state=5) temp1,
+        (SELECT
+        count( * ) as count
+        FROM
+        express_receive
+        WHERE
+        user_id = #{id}
+        and state=5) temp2
+        )) AS completedNum,
+        (
+        SELECT
+        ifnull( count( * ), 0 )
+        FROM
+        yuntech_express,user
+        WHERE
+        yuntech_express.addressee like CONCAT('%',actual_name,'%') AND user.verified_state=3 AND user.id=#{id} AND
+        yuntech_express.state=1
+        ) AS unExpressNum,
+        (
+        SELECT
+        ifnull( count( * ), 0 )
+        FROM
+        yuntech_express,user
+        WHERE
+        yuntech_express.addressee like CONCAT('%',actual_name,'%') AND user.verified_state=3 AND user.id=#{id}
+        ) AS expressNum,
+        verified_state AS verifiedState
+        FROM
+        USER
+        WHERE
+        id = #{id}
+        LIMIT 1
+    </select>
+</mapper>

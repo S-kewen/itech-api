@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.system.MessageQueueMapper">
+    <select id="getList" parameterType="com.boot.yuntechlife.entity.system.MessageQueue"
+            resultType="com.boot.yuntechlife.entity.system.MessageQueue">
+        select * from message_queue where state=1 and deleted=false
+    </select>
+    <update id="updateOne" parameterType="com.boot.yuntechlife.entity.system.MessageQueue">
+        update message_queue set id=id
+        <if test="state!=null and state!=''">,state=#{state}</if>
+        <if test="try_num!=null and try_num!=''">,try_num=#{try_num}</if>
+        where id=#{id} and deleted=false limit 1
+    </update>
+</mapper>

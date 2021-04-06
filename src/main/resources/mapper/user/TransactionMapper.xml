@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.user.TransactionMapper">
+    <insert id="insertOne" parameterType="com.boot.yuntechlife.entity.user.Transaction">
+        insert into transaction
+        values(0,#{user_id},#{state},#{type},#{title},#{amount},#{commission},#{actual_amount},0,false,CURRENT_TIMESTAMP())
+    </insert>
+    <select id="getList" parameterType="com.boot.yuntechlife.entity.user.User"
+            resultType="com.boot.yuntechlife.entity.user.Transaction">
+        select id,state,type,title,amount,commission,actual_amount,balance,add_time from transaction where
+        user_id=#{id} and deleted=false
+        <if test="keyword!=null and keyword!=''">and title like CONCAT('%',#{keyword},'%')</if>
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="type!=null and type!=''">and type=#{type}</if>
+        <if test="startTime!=null">and add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and add_time&lt;=#{endTime}</if>
+    </select>
+    <update id="deleteOne" parameterType="com.boot.yuntechlife.entity.user.Transaction">
+        update transaction set deleted=true
+        where user_id=#{user_id}
+        and id=#{id}
+        and deleted=false
+        and state!=3
+        limit 1
+    </update>
+</mapper>

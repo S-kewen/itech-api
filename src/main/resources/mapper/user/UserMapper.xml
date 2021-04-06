@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.user.UserMapper">
+    <select id="getById" parameterType="com.boot.yuntechlife.entity.user.User"
+            resultType="com.boot.yuntechlife.entity.user.User">
+        select * from user where id=#{id} limit 1
+    </select>
+    <select id="getByUsername" parameterType="com.boot.yuntechlife.entity.user.User"
+            resultType="com.boot.yuntechlife.entity.user.User">
+        select * from user where username=#{username} limit 1
+    </select>
+    <select id="userLogin" parameterType="com.boot.yuntechlife.entity.user.User"
+            resultType="com.boot.yuntechlife.entity.user.User">
+        select * from user where username=#{username} and password=HEX(AES_ENCRYPT(MD5(#{password}),salt)) limit 1
+    </select>
+    <update id="updateById" parameterType="com.boot.yuntechlife.entity.user.User">
+        update user
+        <set>
+            <if test="password!=null and password!=''">password=HEX(AES_ENCRYPT(MD5(#{password}),salt)),</if>
+            <if test="email!=null and email!=''">email=#{email},</if>
+            <if test="phone!=null">phone=#{phone},</if>
+            <if test="line!=null">line=#{line},</if>
+            <if test="student_id!=null and student_id!=''">student_id=#{student_id},</if>
+            <if test="actual_name!=null and actual_name!=''">actual_name=#{actual_name},</if>
+            <if test="department_id!=null and department_id!=''">department_id=#{department_id},</if>
+            <if test="class_name!=null and class_name!=''">class_name=#{class_name},</if>
+            <if test="student_card!=null and student_card!=''">student_card=#{student_card},</if>
+            <if test="verified_state!=null and verified_state!=''">verified_state=#{verified_state},</if>
+            <if test="verified_remark!=null and verified_remark!=''">verified_remark=#{verified_remark},</if>
+            <if test="avatar!=null and avatar!=''">avatar=#{avatar},</if>
+            <if test="remark!=null">remark=#{remark},</if>
+        </set>
+        where
+        id=#{id}
+        limit 1
+    </update>
+    <insert id="insertOne" parameterType="com.boot.yuntechlife.entity.user.User">
+        insert into
+        user(username,password,state,release_time,salt,email,phone,line,balance,student_id,actual_name,department_id,class_name,student_card,verified_state,verified_remark,verified_explain,avatar,remark,add_time)
+        values(#{username},#{password},#{state},NOW(),md5(rand()),#{email},'','',0,'','',0,'','',1,'','',
+        CONCAT('https://static.iskwen.com/yuntechlife/images/avatar',FLOOR(1 + (RAND() *
+        10)),'.png'),'',CURRENT_TIMESTAMP())
+    </insert>
+    <select id="getCount" parameterType="com.boot.yuntechlife.entity.user.User" resultType="int">
+        select count(*) from user
+        <where>
+            <if test="username!=null and username!=''">and username=#{username}</if>
+            <if test="email!=null and email!=''">and email=#{email}</if>
+        </where>
+    </select>
+    <update id="updateByUsername" parameterType="com.boot.yuntechlife.entity.user.User">
+        update user
+        <set>
+            <if test="password!=null and password!=''">password=HEX(AES_ENCRYPT(MD5(#{password}),salt)),</if>
+            <if test="state!=null and state!=''">state=#{state},</if>
+        </set>
+        where
+        username=#{username}
+        limit 1
+    </update>
+    <select id="getCountByWeek" parameterType="com.boot.yuntechlife.entity.user.User" resultType="java.util.HashMap">
+        ( SELECT count( * ) as count FROM user WHERE DATE_FORMAT( #{add_time}, '%Y-%m-%d' ) >= DATE_FORMAT( add_time,
+        '%Y-%m-%d' ) )
+        UNION ALL
+        ( SELECT count( * ) as count FROM user WHERE DATE_FORMAT( date_sub( #{add_time}, INTERVAL 1 DAY ), '%Y-%m-%d' )
+        >= DATE_FORMAT( add_time, '%Y-%m-%d' ) )
+        UNION ALL
+        ( SELECT count( * ) as count FROM user WHERE DATE_FORMAT( date_sub( #{add_time}, INTERVAL 2 DAY ), '%Y-%m-%d' )
+        >= DATE_FORMAT( add_time, '%Y-%m-%d' ) )
+        UNION ALL
+        ( SELECT count( * ) as count FROM user WHERE DATE_FORMAT( date_sub( #{add_time}, INTERVAL 3 DAY ), '%Y-%m-%d' )
+        >= DATE_FORMAT( add_time, '%Y-%m-%d' ) )
+        UNION ALL
+        ( SELECT count( * ) as count FROM user WHERE DATE_FORMAT( date_sub( #{add_time}, INTERVAL 4 DAY ), '%Y-%m-%d' )
+        >= DATE_FORMAT( add_time, '%Y-%m-%d' ) )
+        UNION ALL
+        ( SELECT count( * ) as count FROM user WHERE DATE_FORMAT( date_sub( #{add_time}, INTERVAL 5 DAY ), '%Y-%m-%d' )
+        >= DATE_FORMAT( add_time, '%Y-%m-%d' ) )
+        UNION ALL
+        ( SELECT count( * ) as count FROM user WHERE DATE_FORMAT( date_sub( #{add_time}, INTERVAL 6 DAY ), '%Y-%m-%d' )
+        >= DATE_FORMAT( add_time, '%Y-%m-%d' ) )
+    </select>
+</mapper>

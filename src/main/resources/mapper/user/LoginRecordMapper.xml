@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.user.LoginRecordMapper">
+    <select id="getByIp" parameterType="com.boot.yuntechlife.entity.user.LoginRecord"
+            resultType="com.boot.yuntechlife.entity.user.LoginRecord">
+        select * from login_record where ip=#{ip} order by add_time desc limit 1
+    </select>
+    <insert id="insertOne" parameterType="com.boot.yuntechlife.entity.user.LoginRecord">
+        insert into login_record
+        values(0,#{user_id},#{state},#{type},#{ip},#{position},#{longitude},#{latitude},#{system},#{browser},#{header},#{token},false,CURRENT_TIMESTAMP())
+    </insert>
+    <select id="getList" parameterType="com.boot.yuntechlife.entity.user.User"
+            resultType="com.boot.yuntechlife.entity.user.LoginRecord">
+        select id,state,type,ip,position,longitude,latitude,system,browser,add_time from login_record where
+        user_id=#{id} and deleted=false
+        <if test="keyword!=null and keyword!=''">and (ip like CONCAT('%',#{keyword},'%') or position like
+            CONCAT('%',#{keyword},'%') or system like CONCAT('%',#{keyword},'%') or browser like
+            CONCAT('%',#{keyword},'%'))
+        </if>
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="startTime!=null">and add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and add_time&lt;=#{endTime}</if>
+        <!--        <if test="sortName!=null and sortName!=''">order by ${sortName}<if test="sortOrder!=null and sortOrder!=''"> ${sortOrder}</if></if>-->
+    </select>
+    <update id="deleteOne" parameterType="com.boot.yuntechlife.entity.user.LoginRecord">
+        update login_record set deleted=true where user_id=#{user_id} and id=#{id} and deleted=false limit 1
+    </update>
+    <select id="getCount" parameterType="com.boot.yuntechlife.entity.user.LoginRecord" resultType="int">
+        select count(*) from login_record
+        <where>
+            <if test="state!=null and state!=''">and state=#{state}</if>
+            <!--            <if test="add_time!=null">and DATE_FORMAT(add_time,'%Y-%m-%d')=DATE_FORMAT(#{add_time},'%Y-%m-%d')</if>-->
+        </where>
+    </select>
+    <select id="getCountByWeek" parameterType="com.boot.yuntechlife.entity.user.LoginRecord"
+            resultType="java.util.HashMap">
+        ( SELECT count( * ) as count FROM login_record WHERE state = 1 AND DATE_FORMAT( #{add_time}, '%Y-%m-%d' ) >=
+        DATE_FORMAT( add_time, '%Y-%m-%d' ) )
+        UNION ALL
+        ( SELECT count( * ) as count FROM login_record WHERE state = 1 AND DATE_FORMAT( date_sub( #{add_time}, INTERVAL
+        1 DAY ), '%Y-%m-%d' ) >= DATE_FORMAT( add_time, '%Y-%m-%d' ) )
+        UNION ALL
+        ( SELECT count( * ) as count FROM login_record WHERE state = 1 AND DATE_FORMAT( date_sub( #{add_time}, INTERVAL
+        2 DAY ), '%Y-%m-%d' ) >= DATE_FORMAT( add_time, '%Y-%m-%d' ) )
+        UNION ALL
+        ( SELECT count( * ) as count FROM login_record WHERE state = 1 AND DATE_FORMAT( date_sub( #{add_time}, INTERVAL
+        3 DAY ), '%Y-%m-%d' ) >= DATE_FORMAT( add_time, '%Y-%m-%d' ) )
+        UNION ALL
+        ( SELECT count( * ) as count FROM login_record WHERE state = 1 AND DATE_FORMAT( date_sub( #{add_time}, INTERVAL
+        4 DAY ), '%Y-%m-%d' ) >= DATE_FORMAT( add_time, '%Y-%m-%d' ) )
+        UNION ALL
+        ( SELECT count( * ) as count FROM login_record WHERE state = 1 AND DATE_FORMAT( date_sub( #{add_time}, INTERVAL
+        5 DAY ), '%Y-%m-%d' ) >= DATE_FORMAT( add_time, '%Y-%m-%d' ) )
+        UNION ALL
+        ( SELECT count( * ) as count FROM login_record WHERE state = 1 AND DATE_FORMAT( date_sub( #{add_time}, INTERVAL
+        6 DAY ), '%Y-%m-%d' ) >= DATE_FORMAT( add_time, '%Y-%m-%d' ) )
+    </select>
+</mapper>

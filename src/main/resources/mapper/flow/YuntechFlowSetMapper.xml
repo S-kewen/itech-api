@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.flow.YuntechFlowSetMapper">
+    <insert id="insertOne" parameterType="com.boot.yuntechlife.entity.flow.YuntechFlowSet">
+        insert into yuntech_flow_set
+        values(0,#{user_id},#{ip},#{state},#{warn_value},#{warn_mail},#{mail_state},#{mail_interval},#{warn_phone},#{phone_state},#{phone_interval},#{remark},false,CURRENT_TIMESTAMP())
+    </insert>
+    <select id="getList" parameterType="com.boot.yuntechlife.entity.user.User"
+            resultType="com.boot.yuntechlife.entity.flow.YuntechFlowSet">
+        select
+        id,ip,state,warn_value,warn_mail,mail_state,mail_interval,warn_phone,phone_state,phone_interval,remark,add_time
+        from yuntech_flow_set where
+        user_id=#{id} and deleted=false
+        <if test="keyword!=null and keyword!=''">and ( ip like CONCAT('%',#{keyword},'%') or warn_mail like
+            CONCAT('%',#{keyword},'%') or warn_phone like CONCAT('%',#{keyword},'%') or remark like
+            CONCAT('%',#{keyword},'%') )
+        </if>
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="startTime!=null">and add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and add_time&lt;=#{endTime}</if>
+    </select>
+    <update id="deleteOne" parameterType="com.boot.yuntechlife.entity.flow.YuntechFlowSet">
+        update yuntech_flow_set set deleted=true
+        where
+        id=#{id}
+        and deleted=false
+        limit 1
+    </update>
+    <select id="getCount" parameterType="com.boot.yuntechlife.entity.flow.YuntechFlowSet" resultType="int">
+        select count(*) from yuntech_flow_set where user_id=#{user_id} and deleted=false
+        <if test="id!=null and id!=''">and id!=#{id}</if><!--排除本項-->
+        <if test="ip!=null and ip!=''">and ip=#{ip}</if>
+        <if test="state!=null and state!=''">and state=#{state}</if>
+    </select>
+    <update id="updateOne" parameterType="com.boot.yuntechlife.entity.flow.YuntechFlowSet">
+        update yuntech_flow_set
+        <set>
+            <if test="ip!=null and ip!=''">ip=#{ip},</if>
+            <if test="state!=null and state!=''">state=#{state},</if>
+            <if test="warn_value!=null and warn_value!=''">warn_value=#{warn_value},</if>
+            <if test="warn_mail!=null">warn_mail=#{warn_mail},</if>
+            <if test="mail_state!=null and mail_state!=''">mail_state=#{mail_state},</if>
+            <if test="mail_interval!=null and mail_interval!=''">mail_interval=#{mail_interval},</if>
+            <if test="warn_phone!=null">warn_phone=#{warn_phone},</if>
+            <if test="phone_state!=null and phone_state!=''">phone_state=#{phone_state},</if>
+            <if test="phone_interval!=null and phone_interval!=''">phone_interval=#{phone_interval},</if>
+            <if test="remark!=null">remark=#{remark},</if>
+        </set>
+        where user_id=#{user_id} and id=#{id} and deleted=false limit 1
+    </update>
+    <select id="getById" parameterType="com.boot.yuntechlife.entity.flow.YuntechFlowSet"
+            resultType="com.boot.yuntechlife.entity.flow.YuntechFlowSet">
+        select * from yuntech_flow_set where user_id=#{user_id} and id=#{id} and deleted=false limit 1
+    </select>
+</mapper>

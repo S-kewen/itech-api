@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.user.CardMapper">
+    <select id="getByCdkey" parameterType="com.boot.yuntechlife.entity.user.Card"
+            resultType="com.boot.yuntechlife.entity.user.Card">
+        select * from card where cdkey=#{cdkey} limit 1
+    </select>
+    <insert id="insertOne" parameterType="com.boot.yuntechlife.entity.user.Card">
+        insert into card
+        values(0,#{user_id},#{state},#{type},#{cdkey},#{amount},#{vaild_time},false,CURRENT_TIMESTAMP())
+    </insert>
+    <!--    <select id="getList" parameterType="com.boot.yuntechlife.entity.user.User" resultType="com.boot.yuntechlife.entity.user.LoginRecord">-->
+    <!--        select id,state,type,ip,position,longitude,latitude,system,browser,add_time from login_record where user_id=#{id} and deleted=false-->
+    <!--        <if test="keyword!=null and keyword!=''">and (ip like CONCAT('%',#{keyword},'%') or position like CONCAT('%',#{keyword},'%') or system like CONCAT('%',#{keyword},'%')  or browser like CONCAT('%',#{keyword},'%'))</if>-->
+    <!--        <if test="state!=null and state!=''">and state=#{state}</if>-->
+    <!--        <if test="startTime!=null">and add_time&gt;=#{startTime}</if>-->
+    <!--        <if test="endTime!=null">and add_time&lt;=#{endTime}</if>-->
+    <!--&lt;!&ndash;        <if test="sortName!=null and sortName!=''">order by ${sortName}<if test="sortOrder!=null and sortOrder!=''"> ${sortOrder}</if></if>&ndash;&gt;-->
+    <!--    </select>-->
+    <!--    <update id="deleteOne" parameterType="com.boot.yuntechlife.entity.user.LoginRecord" >-->
+    <!--        update card set deleted=true where user_id=#{user_id} and id=#{id} and deleted=false limit 1-->
+    <!--    </update>-->
+    <!--    <select id="getCount" parameterType="com.boot.yuntechlife.entity.user.LoginRecord" resultType="int">-->
+    <!--        select count(*) from login_record-->
+    <!--        <where>-->
+    <!--            <if test="state!=null and state!=''">and state=#{state}</if>-->
+    <!--&lt;!&ndash;            <if test="add_time!=null">and DATE_FORMAT(add_time,'%Y-%m-%d')=DATE_FORMAT(#{add_time},'%Y-%m-%d')</if>&ndash;&gt;-->
+    <!--        </where>-->
+    <!--    </select>-->
+    <update id="updateById" parameterType="com.boot.yuntechlife.entity.user.Card">
+        update card
+        <set>
+            <if test="state!=null and state!=''">state=#{state},</if>
+        </set>
+        where
+        id=#{id}
+        and deleted=false
+        limit 1
+    </update>
+</mapper>

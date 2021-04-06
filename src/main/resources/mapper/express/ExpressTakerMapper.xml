@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.yuntechlife.dao.express.ExpressTakerMapper">
+    <insert id="insertOne" parameterType="com.boot.yuntechlife.entity.express.ExpressTaker">
+        insert into express_taker
+        values(0,#{user_id},#{state},#{type},#{contact_name},#{line},#{phone},#{appointment_time},#{appointment_points},#{express_type},#{amount},#{commission},0.00,#{actual_amount},#{take_points},#{express_name},#{express_num},#{recipient_name},#{recipient_phone},#{remark},null,false,CURRENT_TIMESTAMP())
+    </insert>
+    <select id="getCount" parameterType="com.boot.yuntechlife.entity.express.ExpressTaker" resultType="int">
+        select count(*) from express_taker where user_id=#{user_id}
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="express_name!=null and express_name!=''">and express_name=#{express_name}</if>
+        <if test="express_num!=null and express_num!=''">and express_num=#{express_num}</if>
+        and deleted=false
+    </select>
+    <select id="getList" parameterType="com.boot.yuntechlife.entity.user.User"
+            resultType="com.boot.yuntechlife.entity.express.ExpressTaker">
+        select * from express_taker where user_id=#{id} and deleted=false
+        <if test="keyword!=null and keyword!=''">and (contact_name like CONCAT('%',#{keyword},'%') or line like
+            CONCAT('%',#{keyword},'%') or phone like CONCAT('%',#{keyword},'%') or appointment_points like
+            CONCAT('%',#{keyword},'%') or express_name like CONCAT('%',#{keyword},'%') or express_num like
+            CONCAT('%',#{keyword},'%') or recipient_phone like CONCAT('%',#{keyword},'%') or remark like
+            CONCAT('%',#{keyword},'%'))
+        </if>
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="type!=null and type!=''">and type=#{type}</if>
+        <if test="startTime!=null">and add_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and add_time&lt;=#{endTime}</if>
+    </select>
+    <select id="getListByMarket" parameterType="com.boot.yuntechlife.entity.user.User"
+            resultType="com.boot.yuntechlife.entity.express.ExpressTaker">
+        select * from
+        express_taker where deleted=false
+        <if test="express_name!=null and express_name!=''">and (express_name like CONCAT('%',#{express_name},'%'))</if>
+        <if test="state!=null and state!=''">and state=#{state}</if>
+        <if test="express_type!=null and express_type!=''">and express_type=#{express_type}</if>
+        <if test="take_points!=null and take_points!=''">and take_points=#{take_points}</if>
+        <if test="startTime!=null">and appointment_time&gt;=#{startTime}</if>
+        <if test="endTime!=null">and appointment_time&lt;=#{endTime}</if>
+    </select>
+    <update id="deleteOne" parameterType="com.boot.yuntechlife.entity.express.ExpressTaker">
+        update express_taker set deleted=true where user_id=#{user_id} and id=#{id} and deleted=false limit 1
+    </update>
+    <update id="updateOne" parameterType="com.boot.yuntechlife.entity.express.ExpressTaker">
+        update express_taker
+        <set>
+            <if test="state!=null and state!=''">state=#{state},</if>
+            <if test="surcharge!=null">surcharge=#{surcharge},</if>
+        </set>
+        where user_id=#{user_id} and id=#{id} and deleted=false limit 1
+    </update>
+    <select id="getById" parameterType="com.boot.yuntechlife.entity.express.ExpressTaker"
+            resultType="com.boot.yuntechlife.entity.express.ExpressTaker">
+        select * from express_taker where id=#{id} and deleted=false
+        <if test="user_id!=null and user_id!=''">and user_id=#{user_id}</if>
+        limit 1
+    </select>
+    <select id="getByReceive" parameterType="com.boot.yuntechlife.entity.express.ExpressTaker"
+            resultType="com.boot.yuntechlife.entity.express.ExpressTaker">
+        select * from express_taker where id=#{id} limit 1
+    </select>
+</mapper>
